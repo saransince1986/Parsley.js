@@ -78,6 +78,11 @@
                 validator.js
               </a>
             
+              
+              <a class="source" href="validator_registry.html">
+                validator_registry.js
+              </a>
+            
           </div>
         </li>
       </ul>
@@ -98,7 +103,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <pre><code>Parsley.js 2.1.2
+              <pre><code>Parsley.js 2.2.0-rc1
 http:<span class="hljs-comment">//parsleyjs.org</span>
 (c) <span class="hljs-number">2012</span>-<span class="hljs-number">2015</span> Guillaume Potier, Wisembly
 Parsley may be freely distributed under the MIT license.
@@ -175,11 +180,11 @@ define([</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>A proxy between Parsley and <a href="http://validatorjs.org">Validator.js</a></p>
+              <p>A registry of all Parsley validators (built-in and custom)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-string">'parsley/validator'</span>,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-string">'parsley/validator_registry'</span>,</pre></div></div>
             
         </li>
         
@@ -285,7 +290,7 @@ define([</pre></div></div>
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-string">'i18n/en'</span>
-], <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">ParsleyUtils, ParsleyDefaults, ParsleyAbstract, ParsleyValidator, ParsleyUI, ParsleyForm, ParsleyField, ParsleyMultiple, ParsleyFactory</span>) </span>{</pre></div></div>
+], <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">ParsleyUtils, ParsleyDefaults, ParsleyAbstract, ParsleyValidatorRegistry, ParsleyUI, ParsleyForm, ParsleyField, ParsleyMultiple, ParsleyFactory</span>) </span>{</pre></div></div>
             
         </li>
         
@@ -305,7 +310,7 @@ define([</pre></div></div>
       actualizeOptions: <span class="hljs-literal">null</span>,
       _resetOptions: <span class="hljs-literal">null</span>,
       Factory: ParsleyFactory,
-      version: <span class="hljs-string">'2.1.2'</span>
+      version: <span class="hljs-string">'2.2.0-rc1'</span>
     });</pre></div></div>
             
         </li>
@@ -435,8 +440,7 @@ This way, the constructors will have access to those methods</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-built_in">window</span>.Parsley = <span class="hljs-built_in">window</span>.psly = Parsley;
-  <span class="hljs-built_in">window</span>.ParsleyUtils = ParsleyUtils;
-  <span class="hljs-built_in">window</span>.ParsleyValidator = <span class="hljs-keyword">new</span> ParsleyValidator(<span class="hljs-built_in">window</span>.ParsleyConfig.validators, <span class="hljs-built_in">window</span>.ParsleyConfig.i18n);</pre></div></div>
+  <span class="hljs-built_in">window</span>.ParsleyUtils = ParsleyUtils;</pre></div></div>
             
         </li>
         
@@ -446,6 +450,29 @@ This way, the constructors will have access to those methods</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <h3 id="define-methods-that-forward-to-the-registry-and-deprecate-all-access-except-through-window-parsley">Define methods that forward to the registry, and deprecate all access except through window.Parsley</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> registry = <span class="hljs-built_in">window</span>.Parsley._validatorRegistry = <span class="hljs-keyword">new</span> ParsleyValidatorRegistry(<span class="hljs-built_in">window</span>.ParsleyConfig.validators, <span class="hljs-built_in">window</span>.ParsleyConfig.i18n);
+  <span class="hljs-built_in">window</span>.ParsleyValidator = {};
+  $.each(<span class="hljs-string">'setLocale addCatalog addMessage getErrorMessage formatMessage addValidator updateValidator removeValidator'</span>.split(<span class="hljs-string">' '</span>), <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">i, method</span>) </span>{
+    <span class="hljs-built_in">window</span>.Parsley[method] = $.proxy(registry, method);
+    <span class="hljs-built_in">window</span>.ParsleyValidator[method] = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+      ParsleyUtils.warnOnce(<span class="hljs-string">'Accessing the method `'</span>+ method +<span class="hljs-string">'` through ParsleyValidator is deprecated. Simply call `window.Parsley.'</span> + method + <span class="hljs-string">'(...)`'</span>);
+      <span class="hljs-keyword">return</span> <span class="hljs-built_in">window</span>.Parsley[method].apply(<span class="hljs-built_in">window</span>.Parsley, <span class="hljs-built_in">arguments</span>);
+    };
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <h3 id="parsleyui">ParsleyUI</h3>
 <p>UI is a separate class that only listens to some events and then modifies the DOM accordingly
@@ -459,11 +486,11 @@ Could be overriden by defining a <code>window.ParsleyConfig.ParsleyUI</code> app
         </li>
         
         
-        <li id="section-23">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <h3 id="parsley-auto-binding">PARSLEY auto-binding</h3>
 <p>Prevent it by setting <code>ParsleyConfig.autoBind</code> to <code>false</code></p>
@@ -476,11 +503,11 @@ Could be overriden by defining a <code>window.ParsleyConfig.ParsleyUI</code> app
         </li>
         
         
-        <li id="section-24">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-24">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <p>Works only on <code>data-parsley-validate</code>.</p>
 

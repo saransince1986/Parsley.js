@@ -78,6 +78,11 @@
                 validator.js
               </a>
             
+              
+              <a class="source" href="validator_registry.html">
+                validator_registry.js
+              </a>
+            
           </div>
         </li>
       </ul>
@@ -472,9 +477,9 @@ but highly improbable cuz’ manually removing a well Parsley handled error make
       <span class="hljs-keyword">var</span> customConstraintErrorMessage = constraint.name + <span class="hljs-string">'Message'</span>;
 
       <span class="hljs-keyword">if</span> (<span class="hljs-string">'undefined'</span> !== <span class="hljs-keyword">typeof</span> fieldInstance.options[customConstraintErrorMessage])
-        <span class="hljs-keyword">return</span> <span class="hljs-built_in">window</span>.ParsleyValidator.formatMessage(fieldInstance.options[customConstraintErrorMessage], constraint.requirements);
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">window</span>.Parsley.formatMessage(fieldInstance.options[customConstraintErrorMessage], constraint.requirements);
 
-      <span class="hljs-keyword">return</span> <span class="hljs-built_in">window</span>.ParsleyValidator.getErrorMessage(constraint);
+      <span class="hljs-keyword">return</span> <span class="hljs-built_in">window</span>.Parsley.getErrorMessage(constraint);
     },
 
     _diff: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">newResult, oldResult, deep</span>) </span>{
