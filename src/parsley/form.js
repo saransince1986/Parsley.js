@@ -1,7 +1,6 @@
-define('parsley/form', [
-  'parsley/abstract',
-  'parsley/utils'
-], function (ParsleyAbstract, ParsleyUtils) {
+import ParsleyAbstract from 'parsley/abstract';
+import ParsleyUtils from 'parsley/utils';
+
   var ParsleyForm = function (element, domOptions, options) {
     this.__class__ = 'ParsleyForm';
     this.__id__ = ParsleyUtils.generateID();
@@ -174,5 +173,4 @@ define('parsley/form', [
 
   };
 
-  return ParsleyForm;
-});
+export default ParsleyForm;
